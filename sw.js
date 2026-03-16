@@ -1,5 +1,5 @@
-const CACHE_NAME = "optionhunter-v3";
-const ASSETS = ["/", "/index.html", "/css/style.css", "/js/app.js", "/js/indicators.js", "/js/score-engine.js", "/js/market-data.js", "/js/paper-trading.js"];
+const CACHE_NAME = "optionhunter-v3.1";
+const ASSETS = ["/", "/index.html", "/css/style.css", "/js/app.js", "/js/indicators.js", "/js/score-engine.js", "/js/market-data.js", "/js/paper-trading.js", "/js/options-chain.js"];
 
 self.addEventListener("install", e => {
     e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));

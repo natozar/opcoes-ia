@@ -25,6 +25,7 @@
         <button class="tab-btn" data-tab="tab-operations">Minhas Operações</button>
         <button class="tab-btn" data-tab="tab-learn">Aprenda</button>
         <button class="tab-btn" data-tab="tab-market">Mercado</button>
+        <button class="tab-btn" data-tab="tab-chain">Cadeia de Opções</button>
         <button class="tab-btn" data-tab="tab-radar">Radar Avançado</button>
     </nav>
 
@@ -154,6 +155,108 @@
     <section id="tab-market" class="tab-panel">
         <h2 class="section-title">Visão Geral do Mercado — 10 ações mais negociadas da B3</h2>
         <div class="market-grid" id="market-grid"></div>
+    </section>
+
+    <!-- ====== TAB: CADEIA DE OPÇÕES ====== -->
+    <section id="tab-chain" class="tab-panel">
+        <h2 class="section-title">Cadeia de Opções — Dados em Tempo Real</h2>
+
+        <div class="chain-controls">
+            <div class="chain-control-group">
+                <label>Ativo:</label>
+                <select id="chain-asset" class="chain-select"></select>
+            </div>
+            <div class="chain-control-group">
+                <label>Vencimento:</label>
+                <select id="chain-expiration" class="chain-select"></select>
+            </div>
+            <div class="chain-control-group">
+                <label>Exibir:</label>
+                <select id="chain-view" class="chain-select">
+                    <option value="both">CALL + PUT</option>
+                    <option value="calls">Apenas CALL</option>
+                    <option value="puts">Apenas PUT</option>
+                </select>
+            </div>
+            <button id="chain-refresh-btn" class="chain-refresh-btn">Atualizar</button>
+        </div>
+
+        <div class="chain-info-bar">
+            <div class="chain-info-item">
+                <span class="chain-info-label">Preço Ação:</span>
+                <span class="chain-info-value" id="chain-spot">---</span>
+            </div>
+            <div class="chain-info-item">
+                <span class="chain-info-label">Volatilidade:</span>
+                <span class="chain-info-value" id="chain-vol">---</span>
+            </div>
+            <div class="chain-info-item">
+                <span class="chain-info-label">SELIC:</span>
+                <span class="chain-info-value" id="chain-selic">---</span>
+            </div>
+            <div class="chain-info-item">
+                <span class="chain-info-label">Dias p/ Venc.:</span>
+                <span class="chain-info-value" id="chain-dte">---</span>
+            </div>
+            <div class="chain-info-item">
+                <span class="chain-info-label">ATM Strike:</span>
+                <span class="chain-info-value" id="chain-atm">---</span>
+            </div>
+        </div>
+
+        <div class="chain-legend">
+            <span class="legend-itm">ITM (In The Money)</span>
+            <span class="legend-atm">ATM (At The Money)</span>
+            <span class="legend-otm">OTM (Out of The Money)</span>
+        </div>
+
+        <div class="table-wrap" id="chain-table-wrap">
+            <table class="chain-table" id="chain-table">
+                <thead>
+                    <tr>
+                        <th colspan="9" class="call-header">CALL (Compra)</th>
+                        <th class="strike-header">STRIKE</th>
+                        <th colspan="9" class="put-header">PUT (Venda)</th>
+                    </tr>
+                    <tr class="sub-header">
+                        <th>Código</th>
+                        <th>Último</th>
+                        <th>Bid</th>
+                        <th>Ask</th>
+                        <th>Volume</th>
+                        <th>OI</th>
+                        <th>Delta</th>
+                        <th>Theta</th>
+                        <th>VI</th>
+                        <th class="strike-col">R$</th>
+                        <th>Código</th>
+                        <th>Último</th>
+                        <th>Bid</th>
+                        <th>Ask</th>
+                        <th>Volume</th>
+                        <th>OI</th>
+                        <th>Delta</th>
+                        <th>Theta</th>
+                        <th>VI</th>
+                    </tr>
+                </thead>
+                <tbody id="chain-body">
+                    <tr><td colspan="19" class="empty">Selecione um ativo e clique "Atualizar"</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="chain-glossary">
+            <div><strong>Código:</strong> Ticker da opção na B3 (ex: PETRC45 = CALL PETR Março strike 45)</div>
+            <div><strong>Bid/Ask:</strong> Melhor oferta de compra/venda</div>
+            <div><strong>OI:</strong> Open Interest — contratos em aberto</div>
+            <div><strong>Delta:</strong> Quanto a opção move para cada R$1 da ação (0.50 = move R$0.50)</div>
+            <div><strong>Theta:</strong> Perda diária de valor temporal (negativo = perde valor por dia)</div>
+            <div><strong>VI:</strong> Volatilidade Implícita — expectativa de movimento futuro</div>
+            <div><strong>ITM:</strong> Opção com valor intrínseco (CALL: ação acima do strike)</div>
+            <div><strong>OTM:</strong> Opção sem valor intrínseco (só tem valor de tempo)</div>
+            <div class="chain-disclaimer">Preços calculados via modelo Black-Scholes com dados reais da ação (brapi.dev) + SELIC. Códigos seguem convenção oficial B3.</div>
+        </div>
     </section>
 
     <!-- ====== TAB: RADAR ====== -->
