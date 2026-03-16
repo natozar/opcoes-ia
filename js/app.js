@@ -5,6 +5,7 @@ import { analyzeAll } from "./indicators.js";
 import { calculateScore, determineOptionType } from "./score-engine.js";
 import { WATCHLIST, fetchQuote, fetchHistorical, fetchMultipleQuotes } from "./market-data.js";
 import * as PT from "./paper-trading.js";
+import { buildOptionsChain, calculateHistoricalVolatility, getExpirations } from "./options-chain.js";
 
 // Expose indicators globally for score-engine
 window._indicators = { analyzeAll };
@@ -29,6 +30,8 @@ function initTabs() {
             $$(".tab-panel").forEach(p => p.classList.remove("active"));
             btn.classList.add("active");
             $(`#${btn.dataset.tab}`)?.classList.add("active");
+            // Auto-load chain when tab is clicked
+            if (btn.dataset.tab === "tab-chain") loadChain();
         });
     });
 }
@@ -367,11 +370,140 @@ function updateClock() {
     if (el) el.textContent = new Date().toLocaleTimeString("pt-BR");
 }
 
+// =================== OPTIONS CHAIN ===================
+let chainVolatility = {};
+
+function initChain() {
+    const chainAsset = $("#chain-asset");
+    if (!chainAsset) return;
+
+    // Populate asset select
+    chainAsset.innerHTML = WATCHLIST.map(s =>
+        `<option value="${s}" ${s === selectedAsset ? "selected" : ""}>${s}</option>`
+    ).join("");
+
+    // Populate expiration select
+    const exps = getExpirations();
+    const chainExp = $("#chain-expiration");
+    chainExp.innerHTML = exps.map((e, i) =>
+        `<option value="${i}">${e.label} (${e.daysToExp}d)</option>`
+    ).join("");
+
+    // Event listeners
+    chainAsset.addEventListener("change", () => loadChain());
+    chainExp.addEventListener("change", () => loadChain());
+    $("#chain-view")?.addEventListener("change", () => loadChain());
+    $("#chain-refresh-btn")?.addEventListener("click", () => loadChain(true));
+}
+
+async function loadChain(forceRefresh = false) {
+    const symbol = $("#chain-asset")?.value || selectedAsset;
+    const expIdx = parseInt($("#chain-expiration")?.value) || 0;
+    const view = $("#chain-view")?.value || "both";
+
+    setStatus(`Carregando cadeia de opções para ${symbol}...`);
+
+    // Get real stock price
+    const quote = await fetchQuote(symbol);
+    if (!quote) {
+        setStatus(`Erro ao buscar dados de ${symbol}`);
+        return;
+    }
+
+    // Get historical volatility
+    if (!chainVolatility[symbol] || forceRefresh) {
+        const candles = await fetchHistorical(symbol);
+        chainVolatility[symbol] = calculateHistoricalVolatility(candles);
+    }
+
+    const chain = buildOptionsChain(symbol, quote.price, chainVolatility[symbol], expIdx);
+    if (!chain) {
+        setStatus("Erro ao gerar cadeia de opções");
+        return;
+    }
+
+    // Update info bar
+    $("#chain-spot").textContent = `R$ ${chain.spotPrice.toFixed(2)}`;
+    $("#chain-vol").textContent = `${chain.volatility}%`;
+    $("#chain-selic").textContent = `${chain.selic}%`;
+    $("#chain-dte").textContent = `${chain.expiration.daysToExp}`;
+    $("#chain-atm").textContent = `R$ ${chain.atmStrike.toFixed(2)}`;
+
+    // Render table
+    renderChainTable(chain, view);
+    setStatus(`Cadeia de ${symbol} — venc. ${chain.expiration.label} — ${chain.calls.length} strikes`);
+}
+
+function renderChainTable(chain, view) {
+    const body = $("#chain-body");
+    if (!body) return;
+
+    const showCalls = view !== "puts";
+    const showPuts = view !== "calls";
+
+    // Update header visibility
+    const headers = $$("#chain-table thead tr");
+    if (headers.length >= 2) {
+        // We'll show/hide via the rendered rows
+    }
+
+    let html = "";
+    for (let i = 0; i < chain.calls.length; i++) {
+        const call = chain.calls[i];
+        const put = chain.puts[i];
+        const strike = call.strike;
+
+        // Row class based on moneyness
+        let rowClass = "";
+        if (call.moneyness === "ATM") rowClass = "row-atm";
+        else if (call.moneyness === "ITM") rowClass = "row-itm-call";
+        if (put.moneyness === "ITM") rowClass += " row-itm-put";
+
+        html += `<tr class="${rowClass}">`;
+
+        // CALL columns
+        if (showCalls) {
+            html += `
+                <td class="call-ticker">${call.ticker}</td>
+                <td class="call-price">R$ ${call.price.toFixed(2)}</td>
+                <td>${call.bid.toFixed(2)}</td>
+                <td>${call.ask.toFixed(2)}</td>
+                <td>${call.volume.toLocaleString()}</td>
+                <td>${call.openInterest.toLocaleString()}</td>
+                <td>${call.delta.toFixed(2)}</td>
+                <td>${call.theta.toFixed(3)}</td>
+                <td>${call.iv}%</td>`;
+        }
+
+        // STRIKE column
+        html += `<td class="strike-col">R$ ${strike.toFixed(2)}</td>`;
+
+        // PUT columns
+        if (showPuts) {
+            html += `
+                <td class="put-ticker">${put.ticker}</td>
+                <td class="put-price">R$ ${put.price.toFixed(2)}</td>
+                <td>${put.bid.toFixed(2)}</td>
+                <td>${put.ask.toFixed(2)}</td>
+                <td>${put.volume.toLocaleString()}</td>
+                <td>${put.openInterest.toLocaleString()}</td>
+                <td>${put.delta.toFixed(2)}</td>
+                <td>${put.theta.toFixed(3)}</td>
+                <td>${put.iv}%</td>`;
+        }
+
+        html += `</tr>`;
+    }
+
+    body.innerHTML = html || '<tr><td colspan="19" class="empty">Nenhum dado disponível</td></tr>';
+}
+
 // =================== INIT ===================
 document.addEventListener("DOMContentLoaded", async () => {
     initTabs();
     initAssetSelector();
     initMarketCards();
+    initChain();
     renderPaperTrading();
 
     // Radar filters
