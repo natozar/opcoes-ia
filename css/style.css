@@ -132,5 +132,50 @@ tr:hover { background: #1a1a30; }
     .big-select { min-width: 150px; font-size: 16px; }
 }
 
+/* ============ OPTIONS CHAIN ============ */
+.chain-controls { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 12px; flex-wrap: wrap; background: #1a1a2e; border-radius: 8px; padding: 12px 16px; }
+.chain-control-group { display: flex; flex-direction: column; gap: 4px; }
+.chain-control-group label { color: #8888aa; font-size: 11px; font-weight: 600; }
+.chain-select { background: #0a0a1a; color: #fff; border: 1px solid #444; padding: 8px 12px; border-radius: 6px; font-size: 13px; min-width: 140px; }
+.chain-refresh-btn { background: #ffd600; color: #000; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; margin-left: auto; }
+.chain-refresh-btn:hover { background: #ffab00; }
+
+.chain-info-bar { display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; background: #12122a; border-radius: 8px; padding: 10px 16px; }
+.chain-info-item { display: flex; gap: 6px; align-items: center; }
+.chain-info-label { color: #8888aa; font-size: 12px; }
+.chain-info-value { color: #ffd600; font-size: 14px; font-weight: 700; }
+
+.chain-legend { display: flex; gap: 16px; margin-bottom: 8px; font-size: 11px; }
+.legend-itm { color: #4fc3f7; background: rgba(79,195,247,0.1); padding: 3px 10px; border-radius: 4px; }
+.legend-atm { color: #ffd600; background: rgba(255,214,0,0.15); padding: 3px 10px; border-radius: 4px; font-weight: 700; }
+.legend-otm { color: #888; background: rgba(136,136,136,0.1); padding: 3px 10px; border-radius: 4px; }
+
+.chain-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.chain-table th { padding: 6px 8px; text-align: center; font-size: 11px; white-space: nowrap; }
+.chain-table td { padding: 5px 6px; text-align: center; font-size: 12px; white-space: nowrap; border-bottom: 1px solid #1a1a2e; }
+.call-header { background: #0a2e1a; color: #00c853; font-size: 13px !important; font-weight: 700; border-bottom: 2px solid #00c853; }
+.put-header { background: #2e0a0a; color: #ff1744; font-size: 13px !important; font-weight: 700; border-bottom: 2px solid #ff1744; }
+.strike-header { background: #1a1a3e; color: #ffd600; font-weight: 700; }
+.sub-header th { background: #0e0e24; color: #8888aa; font-weight: 600; border-bottom: 1px solid #333; }
+.strike-col { background: #1a1a3e !important; color: #ffd600 !important; font-weight: 700 !important; font-size: 13px !important; }
+
+.chain-table .row-itm-call td:nth-child(-n+9) { background: rgba(79,195,247,0.06); }
+.chain-table .row-itm-put td:nth-last-child(-n+9) { background: rgba(79,195,247,0.06); }
+.chain-table .row-atm { background: rgba(255,214,0,0.08) !important; }
+.chain-table .row-atm td { border-top: 1px solid #ffd600; border-bottom: 1px solid #ffd600; }
+
+.chain-table .call-ticker { color: #00c853; font-weight: 600; cursor: pointer; }
+.chain-table .call-ticker:hover { text-decoration: underline; }
+.chain-table .put-ticker { color: #ff1744; font-weight: 600; cursor: pointer; }
+.chain-table .put-ticker:hover { text-decoration: underline; }
+
+.chain-table .call-price { color: #00c853; font-weight: 700; }
+.chain-table .put-price { color: #ff1744; font-weight: 700; }
+
+.chain-glossary { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 6px; margin-top: 12px; }
+.chain-glossary > div { background: #1a1a2e; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #aaaacc; }
+.chain-glossary strong { color: #ffd600; }
+.chain-disclaimer { grid-column: 1 / -1; color: #666; font-style: italic; font-size: 11px; text-align: center; padding: 8px; background: transparent; }
+
 /* ============ HIDDEN ============ */
 .hidden { display: none !important; }
