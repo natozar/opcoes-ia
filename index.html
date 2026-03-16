@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>Option Hunter AI — Seu Assistente de Opções na B3</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="app-header">
+        <h1>Option Hunter AI <span class="version">v3.0</span></h1>
+        <div class="header-right">
+            <span id="clock">--:--:--</span>
+            <span id="status-bar">Carregando...</span>
+        </div>
+    </header>
+
+    <!-- TABS -->
+    <nav class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-panel">Meu Painel</button>
+        <button class="tab-btn" data-tab="tab-operations">Minhas Operações</button>
+        <button class="tab-btn" data-tab="tab-learn">Aprenda</button>
+        <button class="tab-btn" data-tab="tab-market">Mercado</button>
+        <button class="tab-btn" data-tab="tab-radar">Radar Avançado</button>
+    </nav>
+
+    <!-- ====== TAB: MEU PAINEL ====== -->
+    <section id="tab-panel" class="tab-panel active">
+        <div class="step-box">
+            <div class="step-label">PASSO 1: Escolha o ativo que deseja acompanhar</div>
+            <div class="selector-row">
+                <select id="asset-select" class="big-select"></select>
+                <span class="hint">Dica: comece com PETR4 (Petrobras) — é a ação mais líquida da B3</span>
+            </div>
+        </div>
+
+        <div class="info-bar">
+            <div class="info-card"><div class="stat-label">Preço Atual</div><div class="stat-value" id="dash-price">---</div></div>
+            <div class="info-card"><div class="stat-label">Variação Hoje</div><div class="stat-value" id="dash-change">---</div></div>
+            <div class="info-card"><div class="stat-label">Volume</div><div class="stat-value" id="dash-volume">---</div></div>
+            <div class="info-card"><div class="stat-label">Veredicto da IA</div><div class="stat-value" id="ai-verdict">Aguardando...</div></div>
+        </div>
+
+        <div class="step-label" style="padding:8px 0 4px">PASSO 2: Veja o que a IA recomenda</div>
+
+        <div class="cards-row">
+            <!-- CALL CARD -->
+            <div class="option-card call" id="call-card">
+                <div class="opt-header">▲  CALL — Aposta na ALTA</div>
+                <div class="opt-subtitle">Você ganha se o preço SUBIR</div>
+                <div class="opt-score">Score: --</div>
+                <div class="opt-bar-bg"><div class="opt-bar call-bar"></div></div>
+                <div class="opt-strength">Aguardando scan...</div>
+                <div class="opt-grid">
+                    <div><small>Preço Entrada</small><div class="opt-entry">---</div></div>
+                    <div><small>Probabilidade</small><div class="opt-prob">---</div></div>
+                    <div><small>Alvo (Take Profit)</small><div class="opt-target positive">---</div></div>
+                    <div><small>Limite Perda (Stop)</small><div class="opt-stop negative">---</div></div>
+                    <div><small>Risco/Retorno</small><div class="opt-rr">---</div></div>
+                    <div><small>Qtd</small><input type="number" class="buy-qty" id="buy-qty" value="100" min="1" max="10000"></div>
+                </div>
+                <pre class="opt-explain">Selecione um ativo e aguarde o scan...</pre>
+                <button class="opt-buy-btn call-btn" disabled>SIMULAR COMPRA DE CALL</button>
+            </div>
+
+            <!-- PUT CARD -->
+            <div class="option-card put" id="put-card">
+                <div class="opt-header">▼  PUT — Aposta na QUEDA</div>
+                <div class="opt-subtitle">Você ganha se o preço CAIR</div>
+                <div class="opt-score">Score: --</div>
+                <div class="opt-bar-bg"><div class="opt-bar put-bar"></div></div>
+                <div class="opt-strength">Aguardando scan...</div>
+                <div class="opt-grid">
+                    <div><small>Preço Entrada</small><div class="opt-entry">---</div></div>
+                    <div><small>Probabilidade</small><div class="opt-prob">---</div></div>
+                    <div><small>Alvo (Take Profit)</small><div class="opt-target positive">---</div></div>
+                    <div><small>Limite Perda (Stop)</small><div class="opt-stop negative">---</div></div>
+                    <div><small>Risco/Retorno</small><div class="opt-rr">---</div></div>
+                    <div><small>Qtd</small><input type="number" class="buy-qty" value="100" min="1" max="10000"></div>
+                </div>
+                <pre class="opt-explain">Selecione um ativo e aguarde o scan...</pre>
+                <button class="opt-buy-btn put-btn" disabled>SIMULAR COMPRA DE PUT</button>
+            </div>
+        </div>
+
+        <div class="verdict-box">
+            <div class="step-label">O QUE A IA SUGERE?</div>
+            <p id="ai-verdict-text">Selecione um ativo acima. A IA vai analisar 14 indicadores técnicos e dizer se é melhor CALL ou PUT.</p>
+        </div>
+    </section>
+
+    <!-- ====== TAB: MINHAS OPERAÇÕES ====== -->
+    <section id="tab-operations" class="tab-panel">
+        <h2 class="section-title">Minhas Operações (Paper Trading)</h2>
+        <div class="info-bar">
+            <div class="info-card"><div class="stat-label">Capital Total</div><div class="stat-value" id="pt-capital">R$ 100.000,00</div></div>
+            <div class="info-card"><div class="stat-label">Disponível</div><div class="stat-value" id="pt-available">R$ 100.000,00</div></div>
+            <div class="info-card"><div class="stat-label">P&L Total</div><div class="stat-value" id="pt-pnl">R$ 0,00</div></div>
+            <div class="info-card"><div class="stat-label">Win Rate</div><div class="stat-value" id="pt-winrate">0%</div></div>
+            <div class="info-card"><div class="stat-label">Profit Factor</div><div class="stat-value" id="pt-pf">0.00</div></div>
+            <div class="info-card"><div class="stat-label">Trades</div><div class="stat-value" id="pt-trades">0</div></div>
+        </div>
+
+        <h3 class="sub-title">Posições Abertas</h3>
+        <div class="table-wrap">
+            <table><thead><tr><th>Ativo</th><th>Tipo</th><th>Entrada</th><th>Atual</th><th>P&L</th><th>Stop</th><th>Take</th><th>Ação</th></tr></thead>
+            <tbody id="open-positions-body"><tr><td colspan="8" class="empty">Nenhuma posição aberta</td></tr></tbody></table>
+        </div>
+
+        <h3 class="sub-title">Histórico</h3>
+        <div class="table-wrap">
+            <table><thead><tr><th>Ativo</th><th>Tipo</th><th>Entrada</th><th>Saída</th><th>P&L</th><th>%</th><th>Status</th></tr></thead>
+            <tbody id="history-body"><tr><td colspan="7" class="empty">Nenhum trade no histórico</td></tr></tbody></table>
+        </div>
+    </section>
+
+    <!-- ====== TAB: APRENDA ====== -->
+    <section id="tab-learn" class="tab-panel">
+        <h2 class="section-title">Aprenda a Operar Opções na B3</h2>
+        <div class="learn-grid">
+            <div class="learn-step"><div class="step-num">1</div><h3>Entenda o Score (0-100)</h3><p>O Score é a nota da IA. Combina 5 fatores: <strong>Probabilidade</strong> (25% — RSI, MACD, Bollinger), <strong>Momentum</strong> (20% — ADX, força da tendência), <strong>Volatilidade</strong> (20% — ATR, há movimento suficiente?), <strong>Fluxo</strong> (15% — OBV, volume confirma?), <strong>Técnico</strong> (20% — Estocástico, suportes).<br><br><strong>70+ = Forte</strong> | 50-70 = Moderado | &lt;50 = Fraco</p></div>
+            <div class="learn-step"><div class="step-num">2</div><h3>CALL ou PUT?</h3><p><strong>CALL (verde)</strong> = Preço vai SUBIR. Compre quando RSI &lt; 40, MACD virando pra cima, volume aumentando.<br><br><strong>PUT (vermelho)</strong> = Preço vai CAIR. Compre quando RSI &gt; 60, MACD virando pra baixo.<br><br>DICA: Não lute contra a IA. Se ela diz CALL, não compre PUT.</p></div>
+            <div class="learn-step"><div class="step-num">3</div><h3>Como comprar na simulação</h3><p>1. Escolha o ativo em "Meu Painel"<br>2. Aguarde o scan (1-2 min)<br>3. Veja os cards CALL e PUT lado a lado<br>4. Confira Score, preços e Risco/Retorno<br>5. Clique "SIMULAR COMPRA"<br><br>O Stop Loss e Take Profit são automáticos.</p></div>
+            <div class="learn-step"><div class="step-num">4</div><h3>Acompanhe sua posição</h3><p>Vá em "Minhas Operações":<br>• <strong>Preço Atual:</strong> atualiza a cada 60s<br>• <strong>P&L:</strong> lucro/prejuízo em tempo real<br>• <strong>Stop Loss:</strong> fecha automático se bater<br>• <strong>Take Profit:</strong> fecha automático no alvo<br><br>REGRA DE OURO: Nunca mova o Stop para baixo.</p></div>
+            <div class="learn-step"><div class="step-num">5</div><h3>Quando vender</h3><p>A posição fecha de 3 formas:<br><br>1. <strong>Automática (Take Profit)</strong> — atingiu o alvo<br>2. <strong>Automática (Stop Loss)</strong> — limitou perda<br>3. <strong>Manual</strong> — clique "Fechar" na tabela<br><br>Feche manualmente se o cenário mudou ou se quer garantir lucro parcial.</p></div>
+            <div class="learn-step"><div class="step-num">6</div><h3>Analise seu desempenho</h3><p><strong>Win Rate:</strong> % de acertos. 50%+ é bom.<br><strong>Profit Factor:</strong> lucro/prejuízo total. 1.5+ é excelente.<br><strong>P&L:</strong> saldo geral.<br><br>Use o histórico para aprender com erros e acertos. Opere na simulação até ter confiança.</p></div>
+        </div>
+
+        <h3 class="sub-title" style="margin-top:24px">Glossário</h3>
+        <div class="glossary">
+            <div><strong>CALL</strong> — Opção de compra. Lucra quando o preço SOBE.</div>
+            <div><strong>PUT</strong> — Opção de venda. Lucra quando o preço CAI.</div>
+            <div><strong>Strike</strong> — Preço de exercício da opção.</div>
+            <div><strong>RSI</strong> — Índice de Força Relativa (0-100). &lt;30 = sobrevendido, &gt;70 = sobrecomprado.</div>
+            <div><strong>MACD</strong> — Convergência de Médias Móveis. Histograma positivo = força compradora.</div>
+            <div><strong>ADX</strong> — Força da tendência. &gt;25 = tendência forte.</div>
+            <div><strong>ATR</strong> — Volatilidade média. Usado para calcular Stop e Take Profit.</div>
+            <div><strong>Bollinger</strong> — Bandas de volatilidade. Preço na banda inferior pode indicar compra.</div>
+            <div><strong>OBV</strong> — Volume acumulado. Subindo = smart money comprando.</div>
+            <div><strong>Stop Loss</strong> — Preço limite de perda. Fecha automático para proteger capital.</div>
+            <div><strong>Take Profit</strong> — Preço alvo de lucro. Fecha automático no alvo.</div>
+            <div><strong>Risco/Retorno</strong> — Lucro potencial vs perda potencial. 2:1 = pode ganhar 2x o que pode perder.</div>
+            <div><strong>Win Rate</strong> — % de trades lucrativos.</div>
+            <div><strong>Paper Trading</strong> — Simulação com dinheiro virtual. Pratique sem risco real.</div>
+            <div><strong>Score (0-100)</strong> — Nota da IA combinando 5 indicadores. 70+ = alta confiança.</div>
+        </div>
+    </section>
+
+    <!-- ====== TAB: MERCADO ====== -->
+    <section id="tab-market" class="tab-panel">
+        <h2 class="section-title">Visão Geral do Mercado — 10 ações mais negociadas da B3</h2>
+        <div class="market-grid" id="market-grid"></div>
+    </section>
+
+    <!-- ====== TAB: RADAR ====== -->
+    <section id="tab-radar" class="tab-panel">
+        <h2 class="section-title">Radar Avançado — Todas as oportunidades</h2>
+        <div class="filter-row">
+            <label>Ativo: <select id="radar-asset-filter"><option value="Todos">Todos</option></select></label>
+            <label>Tipo: <select id="radar-type-filter"><option value="Todos">Todos</option><option>CALL</option><option>PUT</option></select></label>
+            <span id="radar-count">0 oportunidades</span>
+        </div>
+        <div class="table-wrap">
+            <table><thead><tr><th>#</th><th>Ativo</th><th>Tipo</th><th>Score</th><th>Prob.</th><th>R/R</th><th>Alvo</th><th>Stop</th></tr></thead>
+            <tbody id="radar-body"><tr><td colspan="8" class="empty">Escaneando oportunidades...</td></tr></tbody></table>
+        </div>
+    </section>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
